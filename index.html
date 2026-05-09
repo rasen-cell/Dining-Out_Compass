@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -541,6 +542,74 @@
     transform: translateY(-2px);
   }
 
+  /* ============ SHARE ============ */
+  .share-section {
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 1px dashed #00000022;
+    text-align: center;
+  }
+  .share-label {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 0.25em;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .share-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .share-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 13px;
+    transition: all 0.2s;
+    box-shadow: 0 3px 0 #00000022;
+    position: relative;
+  }
+  .share-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 0 #00000022;
+  }
+  .share-btn:active { transform: translateY(0); box-shadow: 0 1px 0 #00000022; }
+  .share-btn svg { width: 22px; height: 22px; }
+  .share-btn.twitter { background: #000; }
+  .share-btn.line { background: #06c755; }
+  .share-btn.copy { background: var(--grape); }
+  .share-btn.image { background: var(--mustard); color: var(--ink); }
+  .share-btn.image svg { stroke: var(--ink); }
+
+  .share-tooltip {
+    position: absolute;
+    bottom: -34px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--cream);
+    padding: 4px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+  }
+  .share-btn.copied .share-tooltip { opacity: 1; }
+
   /* ============ FOOTER ============ */
   footer {
     margin-top: 96px;
@@ -629,6 +698,11 @@
     .examples-list { font-size: 13.5px; line-height: 1.85; }
     .niro-meter { padding: 16px 20px; border-radius: 14px; font-size: 13px; margin: 16px 0 0; }
     .niro-label { font-size: 16px; }
+    .share-section { margin-top: 32px; padding-top: 24px; }
+    .share-label { font-size: 12px; letter-spacing: 0.2em; margin-bottom: 14px; }
+    .share-buttons { gap: 10px; }
+    .share-btn { width: 48px; height: 48px; }
+    .share-btn svg { width: 20px; height: 20px; }
     .reset-btn { margin-top: 32px; padding: 11px 28px; font-size: 13px; }
 
     footer { margin-top: 64px; padding: 24px 16px; font-size: 11px; }
@@ -772,6 +846,36 @@
     <div class="niro-meter" id="niro-meter">
       <span class="niro-label">bonus score</span>
       <span id="niro-text">—</span>
+    </div>
+
+    <div class="share-section">
+      <div class="share-label">SHARE YOUR TYPE</div>
+      <div class="share-buttons">
+        <button class="share-btn twitter" id="share-twitter" aria-label="Xで共有">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+          </svg>
+        </button>
+        <button class="share-btn line" id="share-line" aria-label="LINEで共有">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
+          </svg>
+        </button>
+        <button class="share-btn copy" id="share-copy" aria-label="リンクをコピー">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          <span class="share-tooltip" id="copy-tooltip">コピーしました</span>
+        </button>
+        <button class="share-btn image" id="share-image" aria-label="画像として保存">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <button class="reset-btn" onclick="location.reload()">もう一度受ける</button>
@@ -962,8 +1066,220 @@ submitBtn.addEventListener('click', () => {
   document.getElementById('niro-text').innerHTML =
     `「全部のせ＝八寸」スコア<br>${niroLabels[String(niroScore)] || niroLabels["0"]}`;
 
+  // 共有用に結果を保持
+  window.__diagnosisResult = {
+    typeName: verdict.name,
+    typeEn: verdict.en,
+    scoreX: normX,
+    scoreY: normY
+  };
+
   document.getElementById('result').classList.add('show');
   document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+
+// ============ 共有機能 ============
+function getShareText() {
+  const r = window.__diagnosisResult;
+  if (!r) return '';
+  const sx = (r.scoreX > 0 ? '+' : '') + r.scoreX.toFixed(0);
+  const sy = (r.scoreY > 0 ? '+' : '') + r.scoreY.toFixed(0);
+  return `私の外食タイプは「${r.typeName}」でした！\n格式: ${sx} / 質量: ${sy}\n\n#外食コンパス`;
+}
+
+function getShareUrl() {
+  // file://で開かれている場合はURLが共有しても機能しないため、トップURLを返す
+  return window.location.href.startsWith('http') ? window.location.href : 'https://example.com';
+}
+
+// X (Twitter) で共有
+document.getElementById('share-twitter').addEventListener('click', () => {
+  const text = encodeURIComponent(getShareText());
+  const url = encodeURIComponent(getShareUrl());
+  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=600');
+});
+
+// LINEで共有
+document.getElementById('share-line').addEventListener('click', () => {
+  const text = encodeURIComponent(getShareText() + '\n' + getShareUrl());
+  window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(getShareUrl())}&text=${text}`, '_blank', 'width=600,height=600');
+});
+
+// リンクをコピー
+document.getElementById('share-copy').addEventListener('click', async () => {
+  const btn = document.getElementById('share-copy');
+  const tooltip = document.getElementById('copy-tooltip');
+  const text = getShareText() + '\n' + getShareUrl();
+  try {
+    await navigator.clipboard.writeText(text);
+    tooltip.textContent = 'コピーしました';
+  } catch {
+    // フォールバック: textareaを使った旧式コピー
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); tooltip.textContent = 'コピーしました'; }
+    catch { tooltip.textContent = 'コピー失敗'; }
+    document.body.removeChild(ta);
+  }
+  btn.classList.add('copied');
+  setTimeout(() => btn.classList.remove('copied'), 2000);
+});
+
+// 画像として保存（SVGをCanvasに描画してPNG化）
+document.getElementById('share-image').addEventListener('click', () => {
+  const r = window.__diagnosisResult;
+  if (!r) return;
+
+  const W = 800, H = 1000;
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+
+  // 背景
+  ctx.fillStyle = '#fdf6e8';
+  ctx.fillRect(0, 0, W, H);
+
+  // 上部装飾ライン
+  ctx.fillStyle = '#f0a830';
+  ctx.fillRect(W/2 - 30, 50, 60, 4);
+
+  // タイトル
+  ctx.fillStyle = '#3a2818';
+  ctx.font = 'bold 56px "M PLUS Rounded 1c", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('外食コンパス', W/2, 130);
+
+  ctx.font = 'italic 18px "Fraunces", serif';
+  ctx.fillStyle = '#e8553d';
+  ctx.fillText('THE DINING-OUT COMPASS', W/2, 165);
+
+  // 区切り線
+  ctx.strokeStyle = '#3a281822';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(150, 200);
+  ctx.lineTo(W - 150, 200);
+  ctx.stroke();
+
+  // YOUR TYPE ラベル
+  ctx.fillStyle = '#e8553d';
+  ctx.font = 'bold italic 18px "Fraunces", serif';
+  ctx.fillText('YOUR TYPE', W/2, 250);
+
+  // タイプ名
+  ctx.fillStyle = '#3a2818';
+  ctx.font = 'bold 64px "M PLUS Rounded 1c", sans-serif';
+  ctx.fillText(r.typeName, W/2, 320);
+
+  // 英語名
+  ctx.font = 'italic 22px "Fraunces", serif';
+  ctx.fillStyle = '#5a4838';
+  ctx.fillText(r.typeEn, W/2, 360);
+
+  // コンパス図を描画
+  const cmpX = (W - 400) / 2; // 中央配置
+  const cmpY = 410;
+  const cmpSize = 400;
+
+  // 4象限
+  ctx.fillStyle = '#7ab89125';
+  ctx.fillRect(cmpX, cmpY, cmpSize/2, cmpSize/2);
+  ctx.fillStyle = '#f0a83025';
+  ctx.fillRect(cmpX + cmpSize/2, cmpY, cmpSize/2, cmpSize/2);
+  ctx.fillStyle = '#e8553d22';
+  ctx.fillRect(cmpX, cmpY + cmpSize/2, cmpSize/2, cmpSize/2);
+  ctx.fillStyle = '#6b5b9522';
+  ctx.fillRect(cmpX + cmpSize/2, cmpY + cmpSize/2, cmpSize/2, cmpSize/2);
+
+  // 軸線
+  ctx.strokeStyle = '#3a2818';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(cmpX, cmpY + cmpSize/2);
+  ctx.lineTo(cmpX + cmpSize, cmpY + cmpSize/2);
+  ctx.moveTo(cmpX + cmpSize/2, cmpY);
+  ctx.lineTo(cmpX + cmpSize/2, cmpY + cmpSize);
+  ctx.stroke();
+  // 枠
+  ctx.lineWidth = 2;
+  ctx.strokeRect(cmpX, cmpY, cmpSize, cmpSize);
+
+  // 象限ラベル
+  ctx.font = 'bold 18px "M PLUS Rounded 1c", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillStyle = '#3e6d4e';
+  ctx.fillText('庶民派グルメ', cmpX + cmpSize*0.25, cmpY + cmpSize*0.2);
+  ctx.fillStyle = '#a06d10';
+  ctx.fillText('高級・質追求派', cmpX + cmpSize*0.75, cmpY + cmpSize*0.2);
+  ctx.fillStyle = '#c43d28';
+  ctx.fillText('コスパ・大盛り派', cmpX + cmpSize*0.25, cmpY + cmpSize*0.78);
+  ctx.fillStyle = '#5a4880';
+  ctx.fillText('贅沢ボリューム派', cmpX + cmpSize*0.75, cmpY + cmpSize*0.78);
+
+  // 軸ラベル
+  ctx.fillStyle = '#3a2818';
+  ctx.font = 'bold 14px "M PLUS Rounded 1c", sans-serif';
+  ctx.fillText('↑ 質', cmpX + cmpSize/2, cmpY - 12);
+  ctx.fillText('量 ↓', cmpX + cmpSize/2, cmpY + cmpSize + 24);
+  ctx.save();
+  ctx.translate(cmpX - 14, cmpY + cmpSize/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('← カジュアル', 0, 0);
+  ctx.restore();
+  ctx.save();
+  ctx.translate(cmpX + cmpSize + 14, cmpY + cmpSize/2);
+  ctx.rotate(Math.PI/2);
+  ctx.fillText('フォーマル →', 0, 0);
+  ctx.restore();
+
+  // ユーザーの位置
+  const ux = cmpX + cmpSize/2 + (r.scoreX / 100) * (cmpSize/2 - 20);
+  const uy = cmpY + cmpSize/2 - (r.scoreY / 100) * (cmpSize/2 - 20);
+  // パルス
+  ctx.fillStyle = '#e8553d44';
+  ctx.beginPath();
+  ctx.arc(ux, uy, 22, 0, Math.PI*2);
+  ctx.fill();
+  // 本体
+  ctx.fillStyle = '#e8553d';
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(ux, uy, 11, 0, Math.PI*2);
+  ctx.fill();
+  ctx.stroke();
+
+  // スコア表示
+  const scoreY = cmpY + cmpSize + 60;
+  ctx.fillStyle = '#3a2818';
+  ctx.font = 'italic 13px "Fraunces", serif';
+  ctx.fillText('FORMALITY', cmpX + 80, scoreY);
+  ctx.fillText('QUALITY', cmpX + cmpSize - 80, scoreY);
+  ctx.fillStyle = '#e8553d';
+  ctx.font = 'bold 36px "M PLUS Rounded 1c", sans-serif';
+  const sx = (r.scoreX > 0 ? '+' : '') + r.scoreX.toFixed(0);
+  const sy = (r.scoreY > 0 ? '+' : '') + r.scoreY.toFixed(0);
+  ctx.fillText(sx, cmpX + 80, scoreY + 36);
+  ctx.fillText(sy, cmpX + cmpSize - 80, scoreY + 36);
+
+  // フッター
+  ctx.fillStyle = '#5a4838';
+  ctx.font = '13px "M PLUS Rounded 1c", sans-serif';
+  ctx.fillText('THE DINING-OUT COMPASS  ／  #外食コンパス', W/2, H - 30);
+
+  // ダウンロード
+  canvas.toBlob((blob) => {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gaishoku-compass-${r.typeEn.toLowerCase().replace(/\s|×/g, '-')}.png`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }, 'image/png');
 });
 </script>
 
