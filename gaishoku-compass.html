@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>外食コンパス｜The Dining-Out Compass</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,700;0,9..144,900;1,9..144,700&family=Kosugi+Maru&family=M+PLUS+Rounded+1c:wght@400;500;700;800&family=Caveat:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #fdf6e8;
+    --cream-deep: #f5e9cf;
+    --tomato: #e8553d;
+    --tomato-deep: #c43d28;
+    --mustard: #f0a830;
+    --mint: #7ab891;
+    --grape: #6b5b95;
+    --ink: #3a2818;
+    --ink-soft: #5a4838;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "M PLUS Rounded 1c", "Kosugi Maru", system-ui, sans-serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.8;
+    overflow-x: hidden;
+    background-image:
+      radial-gradient(circle at 15% 10%, #f0a83018 0%, transparent 35%),
+      radial-gradient(circle at 85% 60%, #7ab89118 0%, transparent 40%),
+      radial-gradient(circle at 50% 95%, #e8553d12 0%, transparent 40%);
+  }
+
+  /* ============ HEADER ============ */
+  .masthead {
+    padding: 48px 32px 24px;
+    text-align: center;
+    position: relative;
+  }
+  .masthead-line {
+    width: 60px;
+    height: 3px;
+    background: var(--mustard);
+    margin: 0 auto 28px;
+    border-radius: 2px;
+  }
+  .title-jp {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-size: clamp(52px, 9vw, 104px);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--ink);
+    display: inline-block;
+    position: relative;
+  }
+  .title-jp::after {
+    content: "";
+    position: absolute;
+    bottom: -8px;
+    left: 5%;
+    width: 90%;
+    height: 8px;
+    background: var(--mustard);
+    border-radius: 4px;
+    opacity: 0.6;
+    z-index: -1;
+  }
+  .title-en {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: clamp(15px, 2.2vw, 20px);
+    letter-spacing: 0.2em;
+    margin-top: 18px;
+    color: var(--tomato);
+  }
+  .tagline {
+    font-family: "Caveat", cursive;
+    font-size: 22px;
+    margin-top: 16px;
+    color: var(--ink-soft);
+    transform: rotate(-1deg);
+    display: inline-block;
+  }
+
+  /* ============ INTRO ============ */
+  .intro {
+    max-width: 680px;
+    margin: 56px auto 64px;
+    padding: 0 32px;
+    text-align: center;
+  }
+  .intro-lead {
+    font-size: 17px;
+    line-height: 2;
+    font-weight: 400;
+  }
+  .intro-lead strong {
+    background: linear-gradient(transparent 60%, #f0a83080 60%);
+    font-weight: 700;
+    padding: 0 2px;
+  }
+
+  /* ============ AXIS PREVIEW ============ */
+  .axis-preview {
+    max-width: 680px;
+    margin: 64px auto;
+    padding: 36px 32px 32px;
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 4px 0 var(--mustard), 0 6px 20px #0000000d;
+    position: relative;
+  }
+  .axis-preview::before {
+    content: "つの軸";
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--tomato);
+    color: white;
+    padding: 6px 20px;
+    font-weight: 700;
+    border-radius: 20px;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+  }
+  .axis-preview::after {
+    content: "2";
+    position: absolute;
+    top: -22px;
+    left: calc(50% - 38px);
+    background: var(--mustard);
+    color: var(--ink);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 18px;
+    box-shadow: 0 2px 0 var(--ink);
+  }
+  .axis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+    margin-top: 12px;
+  }
+  .axis-item {
+    padding: 4px;
+  }
+  .axis-icon {
+    font-size: 32px;
+    margin-bottom: 6px;
+    line-height: 1;
+  }
+  .axis-label-tag {
+    display: inline-block;
+    background: var(--mustard);
+    color: var(--ink);
+    padding: 4px 14px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    margin-bottom: 10px;
+  }
+  .axis-label-tag.y { background: var(--mint); color: white; }
+  .axis-item h4 {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .axis-item p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--ink-soft);
+  }
+  .axis-poles {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+  .axis-poles span {
+    background: var(--cream);
+    padding: 4px 10px;
+    border-radius: 12px;
+  }
+
+  /* ============ QUESTIONS ============ */
+  .questions {
+    max-width: 760px;
+    margin: 96px auto;
+    padding: 0 24px;
+  }
+  .section-label {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    text-align: center;
+    margin-bottom: 6px;
+    color: var(--tomato);
+    font-weight: 700;
+  }
+  .section-title {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-size: clamp(32px, 5vw, 42px);
+    text-align: center;
+    margin-bottom: 8px;
+    font-weight: 800;
+  }
+  .section-sub {
+    text-align: center;
+    color: var(--ink-soft);
+    margin-bottom: 56px;
+    font-size: 14px;
+  }
+
+  .question {
+    margin-bottom: 28px;
+    padding: 28px;
+    background: white;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 0 #0000000a, 0 4px 12px #0000000a;
+    position: relative;
+  }
+  .question.answered {
+    background: #fff9ec;
+    box-shadow: 0 2px 0 var(--tomato), 0 4px 12px #e8553d20;
+    transform: translateY(-2px);
+  }
+  .question-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  .question-number {
+    background: var(--ink);
+    color: var(--cream);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .question.answered .question-number {
+    background: var(--tomato);
+  }
+  .badge {
+    display: inline-block;
+    padding: 3px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 12px;
+  }
+  .badge-trial {
+    background: var(--tomato);
+    color: white;
+  }
+  .badge-humor {
+    background: var(--mint);
+    color: white;
+  }
+  .question-text {
+    font-size: 17px;
+    line-height: 1.7;
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  .answer-options {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+  }
+  .answer-option {
+    padding: 12px 6px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+    background: var(--cream);
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--ink);
+    line-height: 1.3;
+    border-radius: 12px;
+  }
+  .answer-option:hover {
+    background: var(--cream-deep);
+    transform: translateY(-1px);
+  }
+  .answer-option.selected {
+    background: var(--tomato);
+    color: white;
+    border-color: var(--tomato-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 2px 0 var(--tomato-deep);
+  }
+
+  /* ============ SUBMIT ============ */
+  .submit-zone {
+    text-align: center;
+    margin: 80px auto;
+    padding: 0 32px;
+  }
+  .progress {
+    font-size: 14px;
+    margin-bottom: 12px;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  .progress-bar {
+    max-width: 320px;
+    height: 10px;
+    background: white;
+    border-radius: 10px;
+    margin: 12px auto 28px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px #0000001a;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--mustard), var(--tomato));
+    border-radius: 10px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .submit-btn {
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: 800;
+    padding: 18px 56px;
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    cursor: pointer;
+    border-radius: 100px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 0 #00000033;
+  }
+  .submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .submit-btn:not(:disabled):hover {
+    background: var(--tomato);
+    transform: translateY(-3px);
+    box-shadow: 0 7px 0 var(--tomato-deep);
+  }
+  .submit-btn:not(:disabled):active {
+    transform: translateY(0);
+    box-shadow: 0 2px 0 var(--tomato-deep);
+  }
+
+  /* ============ RESULT ============ */
+  .result {
+    display: none;
+    max-width: 880px;
+    margin: 64px auto;
+    padding: 0 24px;
+  }
+  .result.show { display: block; animation: fadeUp 0.8s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .result-card {
+    background: white;
+    border-radius: 28px;
+    padding: 48px 32px;
+    box-shadow: 0 6px 0 var(--mustard), 0 10px 40px #0000001a;
+    position: relative;
+  }
+
+  .verdict-label {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    text-align: center;
+    color: var(--tomato);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .verdict-emoji {
+    font-size: 56px;
+    text-align: center;
+    margin-bottom: 12px;
+    display: block;
+  }
+  .verdict-name {
+    font-family: "M PLUS Rounded 1c", sans-serif;
+    font-size: clamp(36px, 6vw, 56px);
+    text-align: center;
+    margin: 0 0 8px;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+  .verdict-en {
+    text-align: center;
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    color: var(--ink-soft);
+    letter-spacing: 0.2em;
+    margin-bottom: 28px;
+    font-weight: 500;
+  }
+  .verdict-desc {
+    max-width: 580px;
+    margin: 0 auto 36px;
+    text-align: center;
+    font-size: 15.5px;
+    line-height: 2;
+  }
+
+  .compass-svg {
+    display: block;
+    margin: 0 auto;
+    max-width: 100%;
+    height: auto;
+  }
+
+  .scores {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  .score-item {
+    text-align: center;
+    background: var(--cream);
+    padding: 16px 28px;
+    border-radius: 16px;
+    min-width: 140px;
+  }
+  .score-label {
+    font-family: "Fraunces", serif;
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .score-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--tomato);
+  }
+
+  .examples {
+    max-width: 560px;
+    margin: 36px auto 0;
+    padding: 22px 28px;
+    background: var(--cream);
+    border-radius: 16px;
+    position: relative;
+  }
+  .examples-label {
+    display: inline-block;
+    font-size: 12px;
+    color: white;
+    background: var(--mustard);
+    padding: 4px 12px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+    font-weight: 700;
+  }
+  .examples-list {
+    font-size: 15px;
+    line-height: 1.9;
+    font-weight: 500;
+  }
+
+  .niro-meter {
+    max-width: 560px;
+    margin: 20px auto 0;
+    padding: 20px 28px;
+    background: white;
+    border: 2px dashed var(--mint);
+    border-radius: 16px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .niro-meter strong {
+    color: var(--tomato);
+    font-weight: 800;
+  }
+  .niro-label {
+    font-family: "Caveat", cursive;
+    font-size: 18px;
+    color: var(--mint);
+    margin-bottom: 4px;
+    display: block;
+    font-weight: 700;
+  }
+
+  .reset-btn {
+    display: block;
+    margin: 40px auto 0;
+    padding: 12px 32px;
+    background: white;
+    border: 2px solid var(--ink);
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    border-radius: 100px;
+    transition: all 0.2s;
+    font-size: 14px;
+  }
+  .reset-btn:hover {
+    background: var(--ink);
+    color: var(--cream);
+    transform: translateY(-2px);
+  }
+
+  /* ============ FOOTER ============ */
+  footer {
+    margin-top: 96px;
+    padding: 32px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  footer .heart { color: var(--tomato); }
+
+  @media (max-width: 768px) {
+    body { line-height: 1.7; }
+
+    /* ヘッダー */
+    .masthead { padding: 28px 20px 16px; }
+    .masthead-line { width: 48px; height: 3px; margin-bottom: 20px; }
+    .title-jp { letter-spacing: 0.02em; }
+    .title-en { font-size: 13px; letter-spacing: 0.15em; margin-top: 12px; }
+    .tagline { font-size: 19px; margin-top: 12px; }
+
+    /* イントロ */
+    .intro { margin: 36px auto 40px; padding: 0 24px; }
+    .intro-lead { font-size: 15px; line-height: 1.9; }
+    .intro-lead br { display: none; }
+
+    /* 軸プレビュー */
+    .axis-preview { margin: 40px 16px; padding: 32px 24px 24px; border-radius: 20px; }
+    .axis-grid { grid-template-columns: 1fr; gap: 24px; margin-top: 8px; }
+    .axis-item { padding: 16px; background: var(--cream); border-radius: 16px; }
+    .axis-icon { font-size: 28px; margin-bottom: 4px; }
+    .axis-item h4 { font-size: 18px; }
+    .axis-item p { font-size: 13.5px; line-height: 1.7; }
+    .axis-poles { font-size: 11px; gap: 8px; }
+    .axis-poles span { background: white; padding: 4px 8px; }
+
+    /* 質問セクション */
+    .questions { margin: 64px auto; padding: 0 16px; }
+    .section-title { font-size: 28px; }
+    .section-sub { font-size: 13px; margin-bottom: 36px; }
+    .question { padding: 20px 18px; margin-bottom: 20px; border-radius: 16px; }
+    .question-header { gap: 8px; margin-bottom: 12px; }
+    .question-number { width: 30px; height: 30px; font-size: 13px; }
+    .badge { font-size: 10px; padding: 2px 9px; }
+    .question-text { font-size: 15.5px; line-height: 1.65; margin-bottom: 16px; }
+
+    /* 答えボタン: 5択を縦並びにせず、1列5個にしつつ各ボタンをコンパクトに */
+    .answer-options {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 4px;
+    }
+    .answer-option {
+      font-size: 10.5px;
+      padding: 10px 1px;
+      border-radius: 8px;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+
+    /* 送信ボタン */
+    .submit-zone { margin: 56px auto; padding: 0 24px; }
+    .submit-btn { font-size: 17px; padding: 16px 40px; }
+
+    /* 結果カード */
+    .result { margin: 48px auto; padding: 0 16px; }
+    .result-card { padding: 32px 20px 28px; border-radius: 20px; }
+    .verdict-label { font-size: 12px; letter-spacing: 0.2em; }
+    .verdict-name { font-size: 30px; line-height: 1.25; }
+    .verdict-en { font-size: 12px; letter-spacing: 0.15em; margin-bottom: 22px; }
+    .verdict-desc { font-size: 14px; line-height: 1.85; margin-bottom: 28px; }
+
+    /* SVGコンパス: スマホでは内部マージンとラベルサイズを調整 */
+    .compass-svg { width: 100%; }
+
+    .scores { gap: 10px; margin-top: 24px; flex-wrap: nowrap; }
+    .score-item {
+      flex: 1;
+      min-width: 0;
+      padding: 12px 8px;
+      border-radius: 14px;
+    }
+    .score-label { font-size: 10px; letter-spacing: 0.15em; }
+    .score-value { font-size: 22px; }
+
+    .examples { margin: 24px 0 0; padding: 18px 20px; border-radius: 14px; }
+    .examples-list { font-size: 13.5px; line-height: 1.85; }
+    .niro-meter { padding: 16px 20px; border-radius: 14px; font-size: 13px; margin: 16px 0 0; }
+    .niro-label { font-size: 16px; }
+    .reset-btn { margin-top: 32px; padding: 11px 28px; font-size: 13px; }
+
+    footer { margin-top: 64px; padding: 24px 16px; font-size: 11px; }
+  }
+
+  /* さらに小さい画面 (iPhone SE 等) */
+  @media (max-width: 380px) {
+    .answer-option { font-size: 9.5px; padding: 9px 1px; }
+    .question-text { font-size: 14.5px; }
+    .verdict-name { font-size: 26px; }
+    .score-value { font-size: 19px; }
+    .score-label { font-size: 9px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-line"></div>
+  <h1 class="title-jp">外食コンパス</h1>
+  <div class="title-en">The Dining-Out Compass</div>
+  <div class="tagline">あなたの「外食人格」、診断します</div>
+</header>
+
+<section class="intro">
+  <p class="intro-lead">
+    外食には<strong>派閥</strong>がある。<br>
+    高級寿司に通う人と、ガッツリ系ラーメンを大盛りで頼む人は、<br>
+    同じ「外で食べる」という行為を通じて、<strong>まったく違う幸せ</strong>を追求している。<br><br>
+    全15問。あなたはどのタイプ？
+  </p>
+</section>
+
+<section class="axis-preview">
+  <div class="axis-grid">
+    <div class="axis-item">
+      <div class="axis-icon">👔</div>
+      <span class="axis-label-tag">X軸</span>
+      <h4>格式</h4>
+      <p>カジュアルな雰囲気が好き？それともフォーマルな空間に価値を感じる？</p>
+      <div class="axis-poles">
+        <span>← カジュアル</span>
+        <span>フォーマル →</span>
+      </div>
+    </div>
+    <div class="axis-item">
+      <div class="axis-icon">🍽️</div>
+      <span class="axis-label-tag y">Y軸</span>
+      <h4>充足</h4>
+      <p>お腹いっぱいで満たされたい？それとも質や体験で満たされたい？</p>
+      <div class="axis-poles">
+        <span>↓ 量重視</span>
+        <span>質重視 ↑</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="questions" id="questions">
+  <div class="section-label">QUESTIONNAIRE</div>
+  <h2 class="section-title">15の質問</h2>
+  <p class="section-sub">気軽に直感で答えてください</p>
+  <div id="question-list"></div>
+</section>
+
+<section class="submit-zone">
+  <div class="progress" id="progress">0 / 15 回答済み</div>
+  <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+  <button class="submit-btn" id="submit" disabled>結果を見る</button>
+</section>
+
+<section class="result" id="result">
+  <div class="result-card">
+    <div class="verdict-label">YOUR TYPE</div>
+    <div class="verdict-name" id="verdict-name">—</div>
+    <div class="verdict-en" id="verdict-en">—</div>
+    <p class="verdict-desc" id="verdict-desc">—</p>
+
+    <svg class="compass-svg" id="compass" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+          <path d="M 50 0 L 0 0 0 50" fill="none" stroke="#3a281815" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+
+      <!-- 4 quadrants -->
+      <rect x="50" y="50" width="200" height="200" fill="#7ab89125" rx="4"/>
+      <rect x="250" y="50" width="200" height="200" fill="#f0a83025" rx="4"/>
+      <rect x="50" y="250" width="200" height="200" fill="#e8553d22" rx="4"/>
+      <rect x="250" y="250" width="200" height="200" fill="#6b5b9522" rx="4"/>
+
+      <rect x="50" y="50" width="400" height="400" fill="url(#grid)"/>
+
+      <!-- axes -->
+      <line x1="50" y1="250" x2="450" y2="250" stroke="#3a2818" stroke-width="1.5"/>
+      <line x1="250" y1="50" x2="250" y2="450" stroke="#3a2818" stroke-width="1.5"/>
+
+      <!-- frame -->
+      <rect x="50" y="50" width="400" height="400" fill="none" stroke="#3a2818" stroke-width="2" rx="4"/>
+
+      <!-- quadrant labels -->
+      <text x="150" y="150" text-anchor="middle" font-family="M PLUS Rounded 1c" font-size="17" font-weight="800" fill="#3e6d4e">庶民派グルメ</text>
+      <text x="150" y="170" text-anchor="middle" font-family="Fraunces" font-style="italic" font-size="11" fill="#3e6d4e">CASUAL × QUALITY</text>
+
+      <text x="350" y="150" text-anchor="middle" font-family="M PLUS Rounded 1c" font-size="17" font-weight="800" fill="#a06d10">高級・質追求派</text>
+      <text x="350" y="170" text-anchor="middle" font-family="Fraunces" font-style="italic" font-size="11" fill="#a06d10">FORMAL × QUALITY</text>
+
+      <text x="150" y="338" text-anchor="middle" font-family="M PLUS Rounded 1c" font-size="17" font-weight="800" fill="#c43d28">コスパ・大盛り派</text>
+      <text x="150" y="358" text-anchor="middle" font-family="Fraunces" font-style="italic" font-size="11" fill="#c43d28">CASUAL × QUANTITY</text>
+
+      <text x="350" y="338" text-anchor="middle" font-family="M PLUS Rounded 1c" font-size="17" font-weight="800" fill="#5a4880">贅沢ボリューム派</text>
+      <text x="350" y="358" text-anchor="middle" font-family="Fraunces" font-style="italic" font-size="11" fill="#5a4880">FORMAL × QUANTITY</text>
+
+      <!-- axis labels -->
+      <text x="250" y="35" text-anchor="middle" font-family="M PLUS Rounded 1c" font-size="14" font-weight="700">↑ 質</text>
+      <text x="250" y="478" text-anchor="middle" font-family="M PLUS Rounded 1c" font-size="14" font-weight="700">量 ↓</text>
+      <text x="30" y="255" text-anchor="middle" font-family="M PLUS Rounded 1c" font-size="14" font-weight="700" transform="rotate(-90 30 255)">← カジュアル</text>
+      <text x="476" y="255" text-anchor="middle" font-family="M PLUS Rounded 1c" font-size="14" font-weight="700" transform="rotate(90 476 255)">フォーマル →</text>
+
+      <!-- user point -->
+      <circle id="user-point-pulse" cx="250" cy="250" r="0" fill="none" stroke="#e8553d" stroke-width="3" opacity="0.5"/>
+      <circle id="user-point" cx="250" cy="250" r="0" fill="#e8553d" stroke="white" stroke-width="3"/>
+    </svg>
+
+    <div class="scores">
+      <div class="score-item">
+        <div class="score-label">FORMALITY</div>
+        <div class="score-value" id="score-x">0</div>
+      </div>
+      <div class="score-item">
+        <div class="score-label">QUALITY</div>
+        <div class="score-value" id="score-y">0</div>
+      </div>
+    </div>
+
+    <div class="examples">
+      <span class="examples-label">あなたが好きそうなお店</span>
+      <div class="examples-list" id="examples">—</div>
+    </div>
+
+    <div class="niro-meter" id="niro-meter">
+      <span class="niro-label">bonus score</span>
+      <span id="niro-text">—</span>
+    </div>
+
+    <button class="reset-btn" onclick="location.reload()">もう一度受ける</button>
+  </div>
+</section>
+
+<footer>
+  THE DINING-OUT COMPASS<br>
+  ポリティカルコンパスのパロディ ／ あくまでお遊びの診断です
+</footer>
+
+<script>
+const QUESTIONS = [
+  // X軸（格式）
+  { text: "ドレスコードのある店は、それだけで足が向かなくなる", axis: "x", weight: -1.0 },
+  { text: "ファミレスでデートする相手は信用できる", axis: "x", weight: -1.2, badge: "trial" },
+  { text: "「本日のシェフのおまかせコース」より、メニューから自分で選びたい", axis: "x", weight: -0.8 },
+  { text: "食事中、他の客が出す音が気になる", axis: "x", weight: 1.2, badge: "trial" },
+  { text: "権威ある格付けより、ネットの口コミ評価を信じる", axis: "x", weight: -1.0, badge: "humor" },
+  { text: "紙エプロンを渡される店には、それなりの覚悟がある（褒め言葉として）", axis: "x", weight: -0.8, badge: "humor" },
+  { text: "ソムリエに「お任せします」と言える人間でありたい", axis: "x", weight: 1.2, badge: "trial" },
+  // Y軸（充足）— Q9とQ10が似たニュアンスのため離して配置
+  { text: "食事の本質は栄養補給であり、それ以上を求めるのは贅沢だ", axis: "y", weight: -1.2, badge: "trial" },
+  { text: "一皿3000円のパスタを食べるくらいなら、500円のパスタを6皿食べたい", axis: "y", weight: -1.3, badge: "trial" },
+  { text: "シェフが客席に挨拶に来る店は、なんだか肩が凝る", axis: "y", weight: -0.8 },
+  { text: "「素材の味を活かしました」と言われると、「味が薄いだけでは？」と疑ってしまう", axis: "y", weight: -0.9, badge: "humor" },
+  { text: "メニューに料理の物語（生産者の想い、シェフの哲学等）が書かれていると気が引ける", axis: "y", weight: -1.2, badge: "trial" },
+  { text: "「ちょうどいい量」より「ちょっと多すぎ」のほうが嬉しい", axis: "y", weight: -1.0, badge: "humor" },
+  { text: "ガッツリ系ラーメンの「全部のせ」と、懐石の「八寸」<small style=\"font-size:0.7em;font-weight:400;color:var(--ink-soft);\">（前菜の盛り合わせ）</small>は、同じくらい尊い", axis: "both", weight: 0.3, badge: "trial", isNiro: true },
+  { text: "食後に「美味しかった」より「お腹いっぱい」と言いたい", axis: "y", weight: -1.0 }
+];
+
+const OPTIONS = [
+  { label: "強く同意", value: 2 },
+  { label: "同意", value: 1 },
+  { label: "中立", value: 0 },
+  { label: "反対", value: -1 },
+  { label: "強く反対", value: -2 }
+];
+
+const VERDICTS = {
+  q1: {
+    name: "高級・質追求派",
+    en: "FORMAL × QUALITY",
+    desc: "あなたにとって食事は特別な時間。空間、所作、皿の上の小宇宙——すべてが大切な要素です。シェフのこだわりに耳を傾け、料理の物語を味わうことに、心から喜びを感じるタイプ。「高い」ではなく「価値に見合っている」と感じる、鋭い感性の持ち主です。",
+    examples: "高級寿司 / 星付きフレンチ / 老舗の懐石料理 / オーベルジュ"
+  },
+  q2: {
+    name: "庶民派グルメ",
+    en: "CASUAL × QUALITY",
+    desc: "あなたは「本当に美味しいものは肩肘張らない場所にある」と信じています。少人数のカウンター、年季の入った調理場、店主のこだわり——そこにこそ本物が宿ると確信しています。ガイドブックには載らない名店を嗅ぎ分ける、鋭い嗅覚の持ち主。",
+    examples: "町中華の名店 / 立ち飲みワインバー / 個人経営のビストロ / 路地裏の洋食屋"
+  },
+  q3: {
+    name: "コスパ・大盛り派",
+    en: "CASUAL × QUANTITY",
+    desc: "食事に余計な装飾は要らない。お腹いっぱいで、お財布に優しく、また明日も来られる——その三拍子こそが大事。フードロスとは無縁で、「皿は空っぽにして返すのが礼儀」と本能で理解しているタイプです。",
+    examples: "ガッツリ系ラーメン / ファミレス / 大衆食堂 / 学生街の定食屋 / 丼物チェーン"
+  },
+  q4: {
+    name: "贅沢ボリューム派",
+    en: "FORMAL × QUANTITY",
+    desc: "良いものを、たくさん。あなたの欲望はとてもシンプル、そして贅沢。「腹八分目」という考え方には正直あまり共感しません。食卓の端から端まで料理で埋まる光景こそ、あなたにとっての至福のひとときです。",
+    examples: "高級ホテルのビュッフェ / 黒毛和牛の食べ放題 / 宴会コース / クルーズディナー"
+  },
+  center: {
+    name: "バランス派",
+    en: "CENTRIST",
+    desc: "あなたは状況に応じて店を選べる、柔軟な実用主義者。今日は大盛り、明日は寿司、明後日は定食屋——その日の気分や懐具合、相手次第で、どの象限にも軽やかに移動できます。もしかすると、最も「外食を楽しめる」タイプかもしれません。",
+    examples: "気分次第で何でも / その日のベストを選ぶ"
+  }
+};
+
+const list = document.getElementById('question-list');
+const progress = document.getElementById('progress');
+const progressFill = document.getElementById('progress-fill');
+const submitBtn = document.getElementById('submit');
+const answers = new Array(QUESTIONS.length).fill(null);
+
+QUESTIONS.forEach((q, i) => {
+  const div = document.createElement('div');
+  div.className = 'question';
+  div.id = `q-${i}`;
+  let badgeHtml = '';
+  if (q.badge === 'trial') badgeHtml = '<span class="badge badge-trial">踏み絵</span>';
+  if (q.badge === 'humor') badgeHtml = '<span class="badge badge-humor">小ネタ</span>';
+
+  div.innerHTML = `
+    <div class="question-header">
+      <div class="question-number">${i+1}</div>
+      ${badgeHtml}
+    </div>
+    <div class="question-text">${q.text}</div>
+    <div class="answer-options">
+      ${OPTIONS.map((o) => `<button class="answer-option" data-q="${i}" data-v="${o.value}">${o.label}</button>`).join('')}
+    </div>
+  `;
+  list.appendChild(div);
+});
+
+document.querySelectorAll('.answer-option').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const qi = parseInt(btn.dataset.q);
+    const val = parseInt(btn.dataset.v);
+    answers[qi] = val;
+
+    const card = document.getElementById(`q-${qi}`);
+    card.querySelectorAll('.answer-option').forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    card.classList.add('answered');
+
+    const filled = answers.filter(a => a !== null).length;
+    progress.textContent = `${filled} / ${QUESTIONS.length} 回答済み`;
+    progressFill.style.width = `${(filled / QUESTIONS.length) * 100}%`;
+    submitBtn.disabled = filled < QUESTIONS.length;
+  });
+});
+
+submitBtn.addEventListener('click', () => {
+  let scoreX = 0, scoreY = 0, niroScore = 0;
+  let maxX = 0, maxY = 0;
+
+  QUESTIONS.forEach((q, i) => {
+    const a = answers[i] || 0;
+    if (q.isNiro) {
+      niroScore = a;
+      return;
+    }
+    if (q.axis === 'x') {
+      scoreX += a * q.weight;
+      maxX += 2 * Math.abs(q.weight);
+    } else if (q.axis === 'y') {
+      scoreY += a * q.weight;
+      maxY += 2 * Math.abs(q.weight);
+    }
+  });
+
+  const normX = Math.max(-100, Math.min(100, (scoreX / maxX) * 100));
+  const normY = Math.max(-100, Math.min(100, (scoreY / maxY) * 100));
+
+  const threshold = 15;
+  let verdict;
+  if (Math.abs(normX) < threshold && Math.abs(normY) < threshold) {
+    verdict = VERDICTS.center;
+  } else if (normX >= 0 && normY >= 0) {
+    verdict = VERDICTS.q1;
+  } else if (normX < 0 && normY >= 0) {
+    verdict = VERDICTS.q2;
+  } else if (normX < 0 && normY < 0) {
+    verdict = VERDICTS.q3;
+  } else {
+    verdict = VERDICTS.q4;
+  }
+
+  document.getElementById('verdict-name').textContent = verdict.name;
+  document.getElementById('verdict-en').textContent = verdict.en;
+  document.getElementById('verdict-desc').textContent = verdict.desc;
+  document.getElementById('examples').textContent = verdict.examples;
+
+  document.getElementById('score-x').textContent = (normX > 0 ? '+' : '') + normX.toFixed(0);
+  document.getElementById('score-y').textContent = (normY > 0 ? '+' : '') + normY.toFixed(0);
+
+  const cx = 250 + (normX / 100) * 200;
+  const cy = 250 - (normY / 100) * 200;
+  const point = document.getElementById('user-point');
+  const pulse = document.getElementById('user-point-pulse');
+  point.setAttribute('cx', cx);
+  point.setAttribute('cy', cy);
+  pulse.setAttribute('cx', cx);
+  pulse.setAttribute('cy', cy);
+
+  let r = 0;
+  const animate = setInterval(() => {
+    r += 0.5;
+    point.setAttribute('r', Math.min(r, 10));
+    pulse.setAttribute('r', Math.min(r * 2.5, 24));
+    pulse.setAttribute('opacity', Math.max(0, 0.5 - r * 0.025));
+    if (r >= 20) clearInterval(animate);
+  }, 20);
+
+  const niroLabels = {
+    2: "<strong>悟りの境地</strong><br>ガッツリ系も懐石も等しく愛する稀有な人物。すべての食を肯定する博愛主義者です。",
+    1: "<strong>柔軟な美食家</strong><br>ジャンルの壁を軽やかに越えるタイプ。今日は大盛り、明日は懐石もアリ。",
+    0: "<strong>慎重な判断者</strong><br>安易な相対主義には乗りません。それぞれの場には、それぞれの作法があると考えています。",
+    "-1": "<strong>選別の美学</strong><br>すべてが等価ではない。食には序列があると、あなたは静かに信じています。",
+    "-2": "<strong>純血主義者</strong><br>大盛りラーメンと懐石を同列に語ることには、強い違和感を覚えるタイプ。"
+  };
+  document.getElementById('niro-text').innerHTML =
+    `「全部のせ＝八寸」スコア<br>${niroLabels[String(niroScore)] || niroLabels["0"]}`;
+
+  document.getElementById('result').classList.add('show');
+  document.getElementById('result').scrollIntoView({ behavior: 'smooth', block: 'start' });
+});
+</script>
+
+</body>
+</html>
