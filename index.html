@@ -587,11 +587,28 @@
   }
   .share-btn:active { transform: translateY(0); box-shadow: 0 1px 0 #00000022; }
   .share-btn svg { width: 22px; height: 22px; }
+  .share-btn[hidden] { display: none !important; }
   .share-btn.twitter { background: #000; }
   .share-btn.line { background: #06c755; }
   .share-btn.copy { background: var(--grape); }
   .share-btn.image { background: var(--mustard); color: var(--ink); }
   .share-btn.image svg { stroke: var(--ink); }
+  .share-btn.native { background: var(--tomato); }
+  .share-btn.loading { opacity: 0.6; pointer-events: none; }
+  .share-btn.loading svg { animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .share-hint {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    line-height: 1.6;
+    min-height: 1.6em;
+    transition: opacity 0.3s;
+    opacity: 0;
+  }
+  .share-hint.show { opacity: 1; }
+  .share-hint.error { color: var(--tomato-deep); font-weight: 600; }
 
   .share-tooltip {
     position: absolute;
@@ -851,6 +868,15 @@
     <div class="share-section">
       <div class="share-label">SHARE YOUR TYPE</div>
       <div class="share-buttons">
+        <button class="share-btn native" id="share-native" aria-label="共有" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="18" cy="5" r="3"/>
+            <circle cx="6" cy="12" r="3"/>
+            <circle cx="18" cy="19" r="3"/>
+            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+          </svg>
+        </button>
         <button class="share-btn twitter" id="share-twitter" aria-label="Xで共有">
           <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
@@ -874,8 +900,10 @@
             <polyline points="7 10 12 15 17 10"/>
             <line x1="12" y1="15" x2="12" y2="3"/>
           </svg>
+          <span class="share-tooltip" id="image-tooltip">画像を保存しました</span>
         </button>
       </div>
+      <div class="share-hint" id="share-hint"></div>
     </div>
 
     <button class="reset-btn" onclick="location.reload()">もう一度受ける</button>
@@ -1079,6 +1107,17 @@ submitBtn.addEventListener('click', () => {
 });
 
 // ============ 共有機能 ============
+const shareHint = document.getElementById('share-hint');
+let hintTimer = null;
+
+function showHint(msg, isError = false) {
+  if (hintTimer) clearTimeout(hintTimer);
+  shareHint.textContent = msg;
+  shareHint.classList.toggle('error', isError);
+  shareHint.classList.add('show');
+  hintTimer = setTimeout(() => shareHint.classList.remove('show'), 3500);
+}
+
 function getShareText() {
   const r = window.__diagnosisResult;
   if (!r) return '';
@@ -1088,49 +1127,142 @@ function getShareText() {
 }
 
 function getShareUrl() {
-  // file://で開かれている場合はURLが共有しても機能しないため、トップURLを返す
-  return window.location.href.startsWith('http') ? window.location.href : 'https://example.com';
+  // 本番URL(http/https)で開かれている時のみURLを返す
+  return window.location.href.startsWith('http') ? window.location.href : '';
+}
+
+function getShareTextWithUrl() {
+  const url = getShareUrl();
+  return url ? getShareText() + '\n' + url : getShareText();
+}
+
+// 環境検出
+const ua = navigator.userAgent || '';
+const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+const isAndroid = /Android/.test(ua);
+const isMobile = isIOS || isAndroid || /Mobile/.test(ua);
+const hasWebShare = typeof navigator.share === 'function';
+const hasShareFiles = typeof navigator.canShare === 'function';
+
+// スマホでWeb Share APIが使える場合は、ネイティブ共有を優先表示
+if (isMobile && hasWebShare) {
+  document.getElementById('share-native').hidden = false;
+  // モバイルではX/LINE個別ボタンを隠して、ネイティブ共有から選んでもらう
+  document.getElementById('share-twitter').hidden = true;
+  document.getElementById('share-line').hidden = true;
 }
 
 // X (Twitter) で共有
 document.getElementById('share-twitter').addEventListener('click', () => {
   const text = encodeURIComponent(getShareText());
-  const url = encodeURIComponent(getShareUrl());
-  window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank', 'width=600,height=600');
+  const url = getShareUrl();
+  // URLが空ならtextのみ共有
+  const intent = url
+    ? `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`
+    : `https://twitter.com/intent/tweet?text=${text}`;
+  const w = window.open(intent, '_blank', 'noopener,noreferrer');
+  if (!w) {
+    location.href = intent;
+  }
 });
 
 // LINEで共有
 document.getElementById('share-line').addEventListener('click', () => {
-  const text = encodeURIComponent(getShareText() + '\n' + getShareUrl());
-  window.open(`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent(getShareUrl())}&text=${text}`, '_blank', 'width=600,height=600');
+  const fullText = getShareTextWithUrl();
+  const intent = `https://line.me/R/msg/text/?${encodeURIComponent(fullText)}`;
+  const w = window.open(intent, '_blank', 'noopener,noreferrer');
+  if (!w) {
+    location.href = intent;
+  }
 });
 
-// リンクをコピー
+// ネイティブ共有 (Web Share API)
+document.getElementById('share-native').addEventListener('click', async () => {
+  const btn = document.getElementById('share-native');
+  if (btn.classList.contains('loading')) return;
+
+  const url = getShareUrl();
+  const shareData = {
+    title: '外食コンパス',
+    text: getShareText()
+  };
+  if (url) shareData.url = url;
+
+  try {
+    await navigator.share(shareData);
+  } catch (err) {
+    // ユーザーキャンセル(AbortError)はエラーとして表示しない
+    if (err && err.name !== 'AbortError') {
+      showHint('共有に失敗しました。別の方法をお試しください', true);
+    }
+  }
+});
+
+// クリップボードへコピー: iOS対応も含めた堅牢な実装
+async function copyToClipboard(text) {
+  // 1. モダンAPI (HTTPS必須)
+  if (navigator.clipboard && window.isSecureContext) {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch (e) { /* フォールバックへ */ }
+  }
+  // 2. iOS Safari等向けのフォールバック
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.setAttribute('readonly', '');
+  ta.contentEditable = 'true';
+  ta.style.position = 'fixed';
+  ta.style.top = '0';
+  ta.style.left = '0';
+  ta.style.opacity = '0';
+  ta.style.pointerEvents = 'none';
+  document.body.appendChild(ta);
+  let success = false;
+  try {
+    if (isIOS) {
+      // iOS Safari: Range/Selection を使う
+      const range = document.createRange();
+      range.selectNodeContents(ta);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      ta.setSelectionRange(0, 999999);
+    } else {
+      ta.focus();
+      ta.select();
+    }
+    success = document.execCommand('copy');
+  } catch (e) {
+    success = false;
+  }
+  document.body.removeChild(ta);
+  return success;
+}
+
 document.getElementById('share-copy').addEventListener('click', async () => {
   const btn = document.getElementById('share-copy');
   const tooltip = document.getElementById('copy-tooltip');
-  const text = getShareText() + '\n' + getShareUrl();
-  try {
-    await navigator.clipboard.writeText(text);
+  const text = getShareTextWithUrl();
+  const ok = await copyToClipboard(text);
+  if (ok) {
     tooltip.textContent = 'コピーしました';
-  } catch {
-    // フォールバック: textareaを使った旧式コピー
-    const ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    try { document.execCommand('copy'); tooltip.textContent = 'コピーしました'; }
-    catch { tooltip.textContent = 'コピー失敗'; }
-    document.body.removeChild(ta);
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 2000);
+  } else {
+    showHint('コピーに失敗しました。手動で選択してコピーしてください', true);
   }
-  btn.classList.add('copied');
-  setTimeout(() => btn.classList.remove('copied'), 2000);
 });
 
-// 画像として保存（SVGをCanvasに描画してPNG化）
-document.getElementById('share-image').addEventListener('click', () => {
+// Canvas画像生成: フォント読み込み待機 & iOS対応
+async function generateShareImage() {
   const r = window.__diagnosisResult;
-  if (!r) return;
+  if (!r) return null;
+
+  // フォント読み込みを確実に待つ (ない場合はシステムフォントで描画される)
+  if (document.fonts && document.fonts.ready) {
+    try { await document.fonts.ready; } catch (e) { /* 続行 */ }
+  }
 
   const W = 800, H = 1000;
   const canvas = document.createElement('canvas');
@@ -1163,7 +1295,7 @@ document.getElementById('share-image').addEventListener('click', () => {
   ctx.lineTo(W - 150, 200);
   ctx.stroke();
 
-  // YOUR TYPE ラベル
+  // YOUR TYPE
   ctx.fillStyle = '#e8553d';
   ctx.font = 'bold italic 18px "Fraunces", serif';
   ctx.fillText('YOUR TYPE', W/2, 250);
@@ -1178,8 +1310,8 @@ document.getElementById('share-image').addEventListener('click', () => {
   ctx.fillStyle = '#5a4838';
   ctx.fillText(r.typeEn, W/2, 360);
 
-  // コンパス図を描画
-  const cmpX = (W - 400) / 2; // 中央配置
+  // コンパス図
+  const cmpX = (W - 400) / 2;
   const cmpY = 410;
   const cmpSize = 400;
 
@@ -1193,7 +1325,7 @@ document.getElementById('share-image').addEventListener('click', () => {
   ctx.fillStyle = '#6b5b9522';
   ctx.fillRect(cmpX + cmpSize/2, cmpY + cmpSize/2, cmpSize/2, cmpSize/2);
 
-  // 軸線
+  // 軸
   ctx.strokeStyle = '#3a2818';
   ctx.lineWidth = 1.5;
   ctx.beginPath();
@@ -1202,7 +1334,6 @@ document.getElementById('share-image').addEventListener('click', () => {
   ctx.moveTo(cmpX + cmpSize/2, cmpY);
   ctx.lineTo(cmpX + cmpSize/2, cmpY + cmpSize);
   ctx.stroke();
-  // 枠
   ctx.lineWidth = 2;
   ctx.strokeRect(cmpX, cmpY, cmpSize, cmpSize);
 
@@ -1226,32 +1357,25 @@ document.getElementById('share-image').addEventListener('click', () => {
   ctx.save();
   ctx.translate(cmpX - 14, cmpY + cmpSize/2);
   ctx.rotate(-Math.PI/2);
-  ctx.fillText('← カジュアル', 0, 0);
+  ctx.fillText('カジュアル', 0, 0);
   ctx.restore();
   ctx.save();
   ctx.translate(cmpX + cmpSize + 14, cmpY + cmpSize/2);
   ctx.rotate(Math.PI/2);
-  ctx.fillText('フォーマル →', 0, 0);
+  ctx.fillText('フォーマル', 0, 0);
   ctx.restore();
 
-  // ユーザーの位置
+  // ユーザー位置
   const ux = cmpX + cmpSize/2 + (r.scoreX / 100) * (cmpSize/2 - 20);
   const uy = cmpY + cmpSize/2 - (r.scoreY / 100) * (cmpSize/2 - 20);
-  // パルス
   ctx.fillStyle = '#e8553d44';
-  ctx.beginPath();
-  ctx.arc(ux, uy, 22, 0, Math.PI*2);
-  ctx.fill();
-  // 本体
+  ctx.beginPath(); ctx.arc(ux, uy, 22, 0, Math.PI*2); ctx.fill();
   ctx.fillStyle = '#e8553d';
   ctx.strokeStyle = 'white';
   ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.arc(ux, uy, 11, 0, Math.PI*2);
-  ctx.fill();
-  ctx.stroke();
+  ctx.beginPath(); ctx.arc(ux, uy, 11, 0, Math.PI*2); ctx.fill(); ctx.stroke();
 
-  // スコア表示
+  // スコア
   const scoreY = cmpY + cmpSize + 60;
   ctx.fillStyle = '#3a2818';
   ctx.font = 'italic 13px "Fraunces", serif';
@@ -1269,17 +1393,78 @@ document.getElementById('share-image').addEventListener('click', () => {
   ctx.font = '13px "M PLUS Rounded 1c", sans-serif';
   ctx.fillText('THE DINING-OUT COMPASS  ／  #外食コンパス', W/2, H - 30);
 
-  // ダウンロード
-  canvas.toBlob((blob) => {
+  // Blob化
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve({ blob, canvas }), 'image/png');
+  });
+}
+
+document.getElementById('share-image').addEventListener('click', async () => {
+  const btn = document.getElementById('share-image');
+  const tooltip = document.getElementById('image-tooltip');
+  if (btn.classList.contains('loading')) return;
+  btn.classList.add('loading');
+
+  try {
+    const result = await generateShareImage();
+    if (!result || !result.blob) {
+      showHint('画像の生成に失敗しました', true);
+      return;
+    }
+    const { blob, canvas } = result;
+    const r = window.__diagnosisResult;
+    const filename = `gaishoku-compass-${r.typeEn.toLowerCase().replace(/\s|×/g, '-')}.png`;
+
+    // モバイル&Web Share API対応 → ファイル付き共有を試す (iOS 15+, Android Chrome)
+    if (isMobile && hasWebShare && hasShareFiles) {
+      const file = new File([blob], filename, { type: 'image/png' });
+      const shareData = { files: [file], title: '外食コンパス', text: getShareText() };
+      if (navigator.canShare(shareData)) {
+        try {
+          await navigator.share(shareData);
+          // 成功時のヒント表示
+          showHint('共有が完了しました');
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return; // ユーザーキャンセル
+          // フォールバックへ
+        }
+      }
+    }
+
+    // iOS Safari: a.download が効かないので、新タブで画像を開いて長押し保存を促す
+    if (isIOS) {
+      const url = URL.createObjectURL(blob);
+      const w = window.open(url, '_blank');
+      if (!w) {
+        // ポップアップブロック時はdataURLにフォールバック
+        const dataUrl = canvas.toDataURL('image/png');
+        location.href = dataUrl;
+      }
+      showHint('開いた画像を長押しで保存できます');
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      return;
+    }
+
+    // 通常のブラウザ: ダウンロード
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `gaishoku-compass-${r.typeEn.toLowerCase().replace(/\s|×/g, '-')}.png`;
+    a.download = filename;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }, 'image/png');
+
+    tooltip.textContent = '画像を保存しました';
+    btn.classList.add('copied');
+    setTimeout(() => btn.classList.remove('copied'), 2000);
+  } catch (err) {
+    showHint('画像の生成に失敗しました', true);
+    console.error('Image generation error:', err);
+  } finally {
+    btn.classList.remove('loading');
+  }
 });
 </script>
 
